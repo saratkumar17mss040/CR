@@ -21,3 +21,5 @@ Make sure you check boundary conditions
 Time & storage complexity
 Suggest optimizations
 
+2. try...catch only works for runtime errors.
+

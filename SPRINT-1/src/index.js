@@ -495,7 +495,7 @@ function factorialize(num) {
 
 factorialize(5);
 
-// 2. Recursion
+// 2. Recursion - https://stackoverflow.com/questions/33923/what-is-tail-recursion
 
 function factorialize2(num) {
     if (num === 0) {
@@ -611,7 +611,7 @@ const titleCase = (str) => {
 console.log(titleCase("I'm a little tea pot"));
 
 
-// 2
+// 2 
 
 const titleCase2 = (str) => {
     const wordArr = str.split(' ');
@@ -971,3 +971,486 @@ function palindrome(str) {
 }
 
 console.log(palindrome("eye"));
+
+// 35. Using Arrow functions
+
+let todoDB = [];
+
+function addTodo(item, priority) {
+    if (priority === "high") {
+        todoDB.unshift(item);
+    } else {
+        todoDB.push(item);
+    }
+}
+
+addTodo("Item 1");
+addTodo("Item 2");
+addTodo("Item 3", "high");
+
+console.log(todoDB) // Prints [ 'Item 3', 'Item 1', 'Item 2' ]
+
+const addTodo1 = (item, priority) =>
+    priority === "high" ?
+        todoDB.unshift(item) :
+        todoDB.push(item);
+
+
+addTodo1("Item 1");
+addTodo1("Item 2");
+addTodo1("Item 3", "high");
+
+console.log(todoDB) // Prints [ 'Item 3', 'Item 1', 'Item 2' ]
+
+// 36. Feature update!
+
+let todoDBMultiple = [];
+
+const addMultipleTodos = (...item) => todoDBMultiple = todoDBMultiple.concat(item);
+
+console.log(addMultipleTodos("Item 1", "Item 4"));
+console.log(todoDBMultiple);
+
+
+// 37. Filesystem Validators
+
+
+const files = [
+    { id: 1, size: 2000, filename: "1.txt" },
+    { id: 2, size: 4000, filename: "2.txt" },
+    { id: 3, size: 3000, filename: "3.html" },
+];
+
+const blockedExt = [".psd", ".js"];
+
+
+function isPayloadSizeValid(files, limit) {
+    const aboveLimitFile = files.find((file) => file.size > limit);
+    if (aboveLimitFile) {
+        return false;
+    }
+    return true;
+}
+
+// 1
+
+function getFileExtension(fileName) {
+    const fileExtensionRegex = /\.[0-9a-z]+$/ig;
+    return fileName.match(fileExtensionRegex)[0];
+}
+
+// 2
+
+function getFileExtension1(fileName) {
+    const extension = fileName.slice(fileName.lastIndexOf("."));
+    return extension;
+}
+
+const fileName = "note.txt";
+
+function hasInvalidFiles(files, blockedExt) {
+    for (const element of files) {
+        const invalidFile = blockedExt.find(extension =>
+            extension === getFileExtension1(element.filename));
+        if (invalidFile) {
+            return true;
+        }
+    }
+    return false;
+}
+
+console.log(getFileExtension(fileName));
+console.log(getFileExtension1(fileName));
+console.log(isPayloadSizeValid(files, 4001));
+console.log(hasInvalidFiles(files, blockedExt));
+
+// 38. Unique array
+
+function uniteUnique(...arr) {
+    let newArr = [];
+    let uniqueArr = [];
+    newArr = newArr.concat(...arr);
+    for (let i = 0; i < newArr.length; i++) {
+        if (!uniqueArr.includes(newArr[i])) {
+            uniqueArr.push(newArr[i]);
+        }
+    }
+    return uniqueArr;
+}
+
+console.log(uniteUnique([1, 3, 2], [5, 2, 1, 4], [2, 1]));
+
+// 39. flatten array
+// flatten arr with reduce - https://stackoverflow.com/questions/67138390/use-reduce-and-recursion-in-javascript-to-flatten-nested-array
+// https://www.digitalocean.com/community/tutorials/js-finally-understand-reduce
+// 1
+
+function steamrollArray(arr) {
+    let flattenedArr = [];
+    for (let i = 0; i < arr.length; i++) {
+        if (Array.isArray(arr[i])) {
+            flattenedArr = flattenedArr.concat(steamrollArray(arr[i]));
+        }
+        else {
+            flattenedArr.push(arr[i]);
+        }
+    }
+    console.log(flattenedArr);
+    return flattenedArr;
+}
+
+// 2
+
+function Flat(arr = []) {
+    return arr.reduce((t, v) => t.concat(Array.isArray(v) ? Flat(v) : v), [])
+}
+
+Flat([1, [2], [3, [[4]]]]);
+steamrollArray([1, [2], [3, [[4]]]]);
+
+// 40. LCM / SCM between range
+// https://forum.freecodecamp.org/t/freecodecamp-challenge-guide-smallest-common-multiple/16075
+
+function smallestCommons(arr) {
+    const [maxNum, minNum] = arr.sort((a, b) => b - a);
+    const noOfDivisors = maxNum - minNum + 1;
+    let upperBound = 1;
+    for (let i = minNum; i <= maxNum; i++) {
+        upperBound *= i;
+    }
+
+    for (let multiple = maxNum; multiple <= upperBound; multiple += maxNum) {
+        let divisorCount = 0;
+        for (let i = minNum; i <= maxNum; i++) {
+            if (multiple % i === 0) {
+                divisorCount++;
+            }
+        }
+        if (divisorCount === noOfDivisors) {
+            return multiple;
+        }
+    }
+}
+
+console.log(smallestCommons([1, 5]));
+
+// 41. Map the Debris
+
+
+function orbitalPeriod(arr) {
+
+    const GM = 398600.4418;
+    const earthRadius = 6367.4447;
+    const a = 2 * Math.PI;
+    const newArr = [];
+
+    const getOrbPeriod = function (obj) {
+        const c = Math.pow(earthRadius + obj.avgAlt, 3);
+        const b = Math.sqrt(c / GM);
+        const orbPeriod = Math.round(a * b);
+        return { name: obj.name, orbitalPeriod: orbPeriod };
+    };
+
+    for (let elem in arr) {
+        newArr.push(getOrbPeriod(arr[elem]));
+    }
+
+    return newArr;
+}
+
+console.log(orbitalPeriod([{ name: "sputnik", avgAlt: 35873.5553 }]));
+
+// 42.https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/intermediate-algorithm-scripting/wherefore-art-thou
+
+function whatIsInAName(collection, source) {
+
+    const arr = collection.filter(collect => {
+        let isSourcePresentInCurrColl = true;
+        for (const key in source) {
+            console.log(key);
+            console.log(collect[key], source[key]);
+            if (!(collect.hasOwnProperty(key)) ||
+                !(collect[key] === source[key])) {
+                isSourcePresentInCurrColl = false;
+            }
+        }
+        if (isSourcePresentInCurrColl) {
+            return collect;
+        }
+    });
+
+    return arr;
+}
+
+console.log(whatIsInAName([
+    { first: "Romeo", last: "Montague" },
+    { first: "Mercutio", last: null },
+    { first: "Tybalt", last: "Capulet" }
+], { last: "Capulet" }));
+
+
+// 43. Spinal case
+
+function spinalCase(str) {
+    const regex = /\s+|_+/g;
+    str = str.replace(/([a-z])([A-Z])/g, "$1 $2");
+    return str.replace(regex, "-").toLowerCase();
+}
+
+console.log(spinalCase("AllThe - small Things"));
+
+// 44. Numeronyms
+
+function maskSentence(str) {
+    let words = str.split(' ');
+    // let maskedSen = '';
+    // for (let i = 0; i < words.length; i++) {
+    //     maskedSen += createNumeronym(words[i]);
+    // }
+    words = words.map(word => {
+        return createNumeronym(word);
+    }).join(' ');
+    return words;
+}
+
+function createNumeronym(str) {
+    if (str.length > 4) {
+        let numeronymWord = str[0] + (str.length - 2).toString() + str[str.length - 1];
+        return numeronymWord;
+    }
+    return str;
+}
+
+const input = 'Every developer likes to mix kubernetes and javascript';
+console.log(maskSentence(input));
+
+// 45. Mean and Median and Mode
+
+const statValueArr = [4, 53, 22, 13, -88, -8, 44, 41, 2];
+
+const calcMean = (statValueArr) => statValueArr.reduce(
+    (meanAcc, value) => meanAcc + value) / statValueArr.length;
+
+console.log(calcMean(statValueArr));
+
+const calcMedian = (statValueArr) => {
+
+    statValueArr.sort((firstVal, secVal) => firstVal - secVal);
+
+    if (statValueArr.length % 2 === 0) {
+        // dividing by 2 to get the first mid index -> [1,2,3,4,5,6] -> 6 - 1 / 2 -> 2,3
+        // () - Are important order of precdence - BODMAS RULE !
+        const firstMidIndex = Math.floor((statValueArr.length - 1) / 2);
+        const medVal = Math.floor((statValueArr[firstMidIndex] + statValueArr[firstMidIndex + 1]) / 2);
+        return medVal;
+    }
+    return statValueArr[Math.floor(statValueArr.length / 2)];
+}
+
+console.log(calcMedian(statValueArr));
+
+const median = arr => {
+    const mid = Math.floor(arr.length / 2),
+        nums = [...arr].sort((a, b) => a - b);
+    return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+};
+
+const calcMode = (statValueArr) => {
+    let numCounterObj = {};
+    for (let val of statValueArr) {
+        if (numCounterObj.hasOwnProperty([val])) {
+            numCounterObj[val] += 1;
+        }
+        else {
+            numCounterObj[val] = 1;
+        }
+    }
+    const sortBasedOnCounterArr = Object.entries(numCounterObj)
+        .filter((arr) => arr[1] > 1)
+        .sort((firstArr, secondArr) => secondArr[1] - firstArr[1]);
+    if (sortBasedOnCounterArr.length === 0) {
+        return "All values appeared just once";
+    }
+    else {
+        let [highCountOfNum, highPossibleCounter] = sortBasedOnCounterArr[0];
+        let similarCountArr = sortBasedOnCounterArr.filter(arr => arr[1] === highPossibleCounter);
+        if (similarCountArr.length > 0) {
+            const numsWithSimilarCounter = similarCountArr.map(arr => arr[0]).join(',');
+            return `${numsWithSimilarCounter} appeared ${highPossibleCounter} times`;
+        }
+        return `${highCountOfNum} appeared ${highPossibleCounter} times`;
+    }
+}
+
+console.log(calcMode(statValueArr));
+
+// 46. Handling errors
+
+function logicRunner(x) {
+    try {
+        getX(x)
+        console.log(x);
+    }
+    catch (err) {
+        console.error(err.stack);
+    }
+}
+
+function getX(x) {
+    if (x === 5) {
+        throw new Error("Error occurred");
+    }
+    return x;
+}
+
+logicRunner(0) // displays 0
+logicRunner(3) // displays 3
+logicRunner(5) // displays "Error occurred"
+
+// 47. Use the reduce Method to Analyze Data
+
+// The global variable
+const watchList = [
+    {
+        "Title": "Inception",
+        "Year": "2010",
+        "Rated": "PG-13",
+        "Released": "16 Jul 2010",
+        "Runtime": "148 min",
+        "Genre": "Action, Adventure, Crime",
+        "Director": "Christopher Nolan",
+        "Writer": "Christopher Nolan",
+        "Actors": "Leonardo DiCaprio, Joseph Gordon-Levitt, Elliot Page, Tom Hardy",
+        "Plot": "A thief, who steals corporate secrets through use of dream-sharing technology, is given the inverse task of planting an idea into the mind of a CEO.",
+        "Language": "English, Japanese, French",
+        "Country": "USA, UK",
+        "Awards": "Won 4 Oscars. Another 143 wins & 198 nominations.",
+        "Poster": "http://ia.media-imdb.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+        "Metascore": "74",
+        "imdbRating": "8.8",
+        "imdbVotes": "1,446,708",
+        "imdbID": "tt1375666",
+        "Type": "movie",
+        "Response": "True"
+    },
+    {
+        "Title": "Interstellar",
+        "Year": "2014",
+        "Rated": "PG-13",
+        "Released": "07 Nov 2014",
+        "Runtime": "169 min",
+        "Genre": "Adventure, Drama, Sci-Fi",
+        "Director": "Christopher Nolan",
+        "Writer": "Jonathan Nolan, Christopher Nolan",
+        "Actors": "Ellen Burstyn, Matthew McConaughey, Mackenzie Foy, John Lithgow",
+        "Plot": "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
+        "Language": "English",
+        "Country": "USA, UK",
+        "Awards": "Won 1 Oscar. Another 39 wins & 132 nominations.",
+        "Poster": "http://ia.media-imdb.com/images/M/MV5BMjIxNTU4MzY4MF5BMl5BanBnXkFtZTgwMzM4ODI3MjE@._V1_SX300.jpg",
+        "Metascore": "74",
+        "imdbRating": "8.6",
+        "imdbVotes": "910,366",
+        "imdbID": "tt0816692",
+        "Type": "movie",
+        "Response": "True"
+    },
+    {
+        "Title": "The Dark Knight",
+        "Year": "2008",
+        "Rated": "PG-13",
+        "Released": "18 Jul 2008",
+        "Runtime": "152 min",
+        "Genre": "Action, Adventure, Crime",
+        "Director": "Christopher Nolan",
+        "Writer": "Jonathan Nolan (screenplay), Christopher Nolan (screenplay), Christopher Nolan (story), David S. Goyer (story), Bob Kane (characters)",
+        "Actors": "Christian Bale, Heath Ledger, Aaron Eckhart, Michael Caine",
+        "Plot": "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, the caped crusader must come to terms with one of the greatest psychological tests of his ability to fight injustice.",
+        "Language": "English, Mandarin",
+        "Country": "USA, UK",
+        "Awards": "Won 2 Oscars. Another 146 wins & 142 nominations.",
+        "Poster": "http://ia.media-imdb.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_SX300.jpg",
+        "Metascore": "82",
+        "imdbRating": "9.0",
+        "imdbVotes": "1,652,832",
+        "imdbID": "tt0468569",
+        "Type": "movie",
+        "Response": "True"
+    },
+    {
+        "Title": "Batman Begins",
+        "Year": "2005",
+        "Rated": "PG-13",
+        "Released": "15 Jun 2005",
+        "Runtime": "140 min",
+        "Genre": "Action, Adventure",
+        "Director": "Christopher Nolan",
+        "Writer": "Bob Kane (characters), David S. Goyer (story), Christopher Nolan (screenplay), David S. Goyer (screenplay)",
+        "Actors": "Christian Bale, Michael Caine, Liam Neeson, Katie Holmes",
+        "Plot": "After training with his mentor, Batman begins his fight to free crime-ridden Gotham City from the corruption that Scarecrow and the League of Shadows have cast upon it.",
+        "Language": "English, Urdu, Mandarin",
+        "Country": "USA, UK",
+        "Awards": "Nominated for 1 Oscar. Another 15 wins & 66 nominations.",
+        "Poster": "http://ia.media-imdb.com/images/M/MV5BNTM3OTc0MzM2OV5BMl5BanBnXkFtZTYwNzUwMTI3._V1_SX300.jpg",
+        "Metascore": "70",
+        "imdbRating": "8.3",
+        "imdbVotes": "972,584",
+        "imdbID": "tt0372784",
+        "Type": "movie",
+        "Response": "True"
+    },
+    {
+        "Title": "Avatar",
+        "Year": "2009",
+        "Rated": "PG-13",
+        "Released": "18 Dec 2009",
+        "Runtime": "162 min",
+        "Genre": "Action, Adventure, Fantasy",
+        "Director": "James Cameron",
+        "Writer": "James Cameron",
+        "Actors": "Sam Worthington, Zoe Saldana, Sigourney Weaver, Stephen Lang",
+        "Plot": "A paraplegic marine dispatched to the moon Pandora on a unique mission becomes torn between following his orders and protecting the world he feels is his home.",
+        "Language": "English, Spanish",
+        "Country": "USA, UK",
+        "Awards": "Won 3 Oscars. Another 80 wins & 121 nominations.",
+        "Poster": "http://ia.media-imdb.com/images/M/MV5BMTYwOTEwNjAzMl5BMl5BanBnXkFtZTcwODc5MTUwMw@@._V1_SX300.jpg",
+        "Metascore": "83",
+        "imdbRating": "7.9",
+        "imdbVotes": "876,575",
+        "imdbID": "tt0499549",
+        "Type": "movie",
+        "Response": "True"
+    }
+];
+
+// 1
+
+function getRating(watchList) {
+    let filteredMovies = watchList
+        .filter(movie => movie.Director === "Christopher Nolan");
+    let avgRat = filteredMovies
+        .reduce((avg, movie) => avg + Number(movie.imdbRating), 0)
+        / filteredMovies.length;
+    return avgRat;
+}
+
+console.log(getRating(watchList));
+
+// 2
+
+function getRating2(watchList) {
+    // Add your code below this line
+    const nolanData = watchList
+        .reduce((data, { Director: director, imdbRating: rating }) => {
+            if (director === 'Christopher Nolan') {
+                data.count++;
+                data.sum += Number(rating);
+            }
+            return data;
+        }, { sum: 0, count: 0 });
+    const averageRating = nolanData.sum / nolanData.count;
+    // Add your code above this line
+    return averageRating;
+}
+
+console.log(getRating2(watchList));
