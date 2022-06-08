@@ -18,6 +18,7 @@ console.log((3 + 10) * 2); // logs 26
 // 3. Calculate the grade if the marks are given
 
 /* 0-40 - Fail
+
 41-60 - C
 61 - 80 B
 81- 100 A */
@@ -274,7 +275,7 @@ function Todo(todos) {
     }
 
     this.insertTodo = function (todo, index) {
-        // [1,2,3,4,5]
+        // [1,2,3,4,5] -> [1,2,3,4, ,5] -> [1,2,3, ,4,5] -> [1,2, ,3,4,5]
         // 23 -> 2
         // [1,2,23,3,4,5]
         for (let i = this.todos.length; i > index; i--) {
@@ -294,7 +295,7 @@ function Todo(todos) {
         this.todos = newTodo;
     }
 
-    this.pop = function () {
+    this.pop = () => {
         this.todos.length = this.todos.length - 1;
     }
 
@@ -358,7 +359,7 @@ function translatePigLatin(str) {
 }
 
 console.log(translatePigLatin("consonant"));
-console.log(translatePigLatin("glove"));
+console.log(translatePigLatin("glove")); // -> oveglay
 
 // 2. Pig Latin - Other sol without indexOf
 
@@ -544,7 +545,7 @@ function largestOfFour(arr) {
             for (let k = 0; k < currArr.length - j - 1; k++) {
                 if (currArr[k] < currArr[k + 1]) {
                     let temp = currArr[k];
-                    currArr[k] = currArr[k + 1]
+                    currArr[k] = currArr[k + 1];
                     currArr[k + 1] = temp;
                 }
             }
@@ -791,6 +792,7 @@ function revNumber(num) {
     }
     return revNum;
 }
+
 
 console.log(revNumber(123));
 
@@ -1167,8 +1169,6 @@ function whatIsInAName(collection, source) {
     const arr = collection.filter(collect => {
         let isSourcePresentInCurrColl = true;
         for (const key in source) {
-            console.log(key);
-            console.log(collect[key], source[key]);
             if (!(collect.hasOwnProperty(key)) ||
                 !(collect[key] === source[key])) {
                 isSourcePresentInCurrColl = false;
@@ -1226,6 +1226,8 @@ console.log(maskSentence(input));
 
 // 45. Mean and Median and Mode
 
+// 1
+
 const statValueArr = [4, 53, 22, 13, -88, -8, 44, 41, 2];
 
 const calcMean = (statValueArr) => statValueArr.reduce(
@@ -1247,6 +1249,17 @@ const calcMedian = (statValueArr) => {
     return statValueArr[Math.floor(statValueArr.length / 2)];
 }
 
+const calcMedian2 = (statValueArr) => {
+    statValueArr.sort((a, b) => a - b);
+    if (statValueArr.length % 2 === 0) {
+        return statValueArr[parseInt((statValueArr.length) / 2)];
+    }
+    let term1 = statValueArr[(statValueArr.length / 2) - 1];
+    let term2 = statValueArr[(statValueArr.length / 2 + 1) - 1];
+    return term1 + term2 / 2;
+}
+
+console.log(calcMedian2(statValueArr));
 console.log(calcMedian(statValueArr));
 
 const median = arr => {
@@ -1283,6 +1296,61 @@ const calcMode = (statValueArr) => {
 }
 
 console.log(calcMode(statValueArr));
+
+// 2 Better constructor pattern
+
+function Stats(statValueArr) {
+    this.statValueArr = statValueArr;
+}
+
+Stats.prototype.calcMean = function () {
+    const { statValueArr } = this;
+    return parseInt(statValueArr.reduce((meanAcc, value) => meanAcc + value) / statValueArr.length);
+}
+
+Stats.prototype.calcMedian = function () {
+    const { statValueArr } = this;
+    statValueArr.sort((firstVal, secVal) => firstVal - secVal);
+    statValueArr.sort((a, b) => a - b);
+    if (statValueArr.length % 2 !== 0) {
+        return statValueArr[parseInt((statValueArr.length) / 2)];
+    }
+    let term1 = statValueArr[parseInt((statValueArr.length) / 2) - 1];
+    let term2 = statValueArr[parseInt((statValueArr.length) / 2 + 1) - 1];
+    return (term1 + term2) / 2;
+}
+
+Stats.prototype.calcMode = function () {
+    let numCounterObj = {};
+    for (let val of this.statValueArr) {
+        if (numCounterObj.hasOwnProperty([val])) {
+            numCounterObj[val] += 1;
+        }
+        else {
+            numCounterObj[val] = 1;
+        }
+    }
+    const sortBasedOnCounterArr = Object.entries(numCounterObj)
+        .filter((arr) => arr[1] > 1)
+        .sort((firstArr, secondArr) => secondArr[1] - firstArr[1]);
+    if (sortBasedOnCounterArr.length === 0) {
+        return "All values appeared just once";
+    }
+    else {
+        let [highCountOfNum, highPossibleCounter] = sortBasedOnCounterArr[0];
+        let similarCountArr = sortBasedOnCounterArr.filter(arr => arr[1] === highPossibleCounter);
+        if (similarCountArr.length > 0) {
+            const numsWithSimilarCounter = similarCountArr.map(arr => arr[0]).join(',');
+            return `${numsWithSimilarCounter} appeared ${highPossibleCounter} times`;
+        }
+        return `${highCountOfNum} appeared ${highPossibleCounter} times`;
+    }
+}
+
+const stats = new Stats(statValueArr);
+console.log(stats.calcMedian());
+console.log(stats.calcMean());
+console.log(stats.calcMode());
 
 // 46. Handling errors
 

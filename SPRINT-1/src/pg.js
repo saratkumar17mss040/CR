@@ -1,5 +1,3 @@
-// Need to check out on function vs arrow function / this / Idempotency / Prototypes / Path & Query Param / Closure / Lexical scope / Error Handling in JS
-
 // const person = {
 //     name: "Yash",
 //     hobbies: ["Coding", "Cricket", "Movies"],

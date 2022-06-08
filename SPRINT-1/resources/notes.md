@@ -23,3 +23,5 @@ Suggest optimizations
 
 2. try...catch only works for runtime errors.
 
+3. Syntax errors are compile-time errors
+
